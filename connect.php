@@ -1,0 +1,18 @@
+<?php
+// Informations de connexion à la base de données
+$dbuser = "root";      // Nom d'utilisateur MySQL
+$dbpass = "";          // Mot de passe MySQL
+$host = "localhost";   // Nom d'hôte du serveur MySQL
+$dbname = "db_reservation_hotel";  // Nom de la base de données
+
+// Création d'une nouvelle connexion à la base de données
+$connect = new mysqli($host, $dbuser, $dbpass, $dbname);
+
+// Vérification de la réussite de la connexion
+if ($connect->connect_error) {
+    // Affichage d'un message d'erreur et arrêt du script en cas d'échec de connexion
+    die("Connection failed: " . $connect->connect_error);
+}
+
+
+?>

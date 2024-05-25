@@ -1,0 +1,120 @@
+-- Création de la base de données 'etudiant'
+CREATE DATABASE IF NOT EXISTS etudiant;
+
+-- Sélection de la base de données 'etudiant'
+USE etudiant;
+
+-- Création de la table 'etudiants'
+CREATE TABLE IF NOT EXISTS etudiants (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nom VARCHAR(255) NOT NULL,
+    postnom VARCHAR(255) NOT NULL,
+    prenom VARCHAR(255) NOT NULL,
+    adresse VARCHAR(255) NOT NULL,
+    telephone VARCHAR(15) NOT NULL,
+    age INT NOT NULL
+);
+
+Pour insérer des données dans votre table "etudiants" de la base de données "etudiant", vous pouvez utiliser une requête SQL INSERT. Voici un exemple de requête pour insérer sept étudiants fictifs :
+INSERT INTO etudiants (nom, postnom, prenom, adresse, telephone, age) VALUES
+('Dupont', 'Martin', 'Jean', '123 Rue A', '123456789', 20),
+('Tremblay', 'Lévesque', 'Sophie', '456 Rue B', '987654321', 22),
+('Gagnon', 'Thibault', 'Alexandre', '789 Rue C', '654321987', 21),
+('Lavoie', 'Gagné', 'Isabelle', '101 Rue D', '123987456', 23),
+('Lefebvre', 'Caron', 'Philippe', '202 Rue E', '456789012', 24),
+('Bouchard', 'Beauchamp', 'Marie', '303 Rue F', '789012345', 25),
+('Roy', 'Bergeron', 'Luc', '404 Rue G', '234567890', 26);
+
+
+
+
+
+1. connect.php :
+<?php
+$dbuser = "root";
+$dbpass = "";
+$host = "localhost";
+$dbname = "etudiant";
+
+$connect = new mysqli($host, $dbuser, $dbpass, $dbname);
+
+if ($connect->connect_error) {
+    die("Connection failed: " . $connect->connect_error);
+}
+?>
+
+
+2. get.php :<?php
+include('connect.php');
+
+$rqt = "SELECT * FROM etudiants";
+$rqt2 = mysqli_query($connect, $rqt) or die(mysqli_error($connect));
+
+$result = array();
+while ($fetchData = $rqt2->fetch_assoc()) {
+    $result[] = $fetchData;
+}
+echo json_encode($result);
+?>
+
+
+3. post.php :
+<?php
+include('connect.php');
+
+$nom = htmlspecialchars($_POST["nom"]);
+$postnom = htmlspecialchars($_POST["postnom"]);
+$prenom = htmlspecialchars($_POST["prenom"]);
+$adresse = htmlspecialchars($_POST["adresse"]);
+$telephone = htmlspecialchars($_POST["telephone"]);
+$age = htmlspecialchars($_POST["age"]);
+
+$sql = "INSERT INTO etudiants (nom, postnom, prenom, adresse, telephone, age) VALUES ('$nom', '$postnom', '$prenom', '$adresse', '$telephone', $age)";
+$connect->query($sql);
+?>
+
+
+4. update.php :
+<?php
+include('connect.php');
+
+if (isset($_POST['id']) && isset($_POST['nom']) && isset($_POST['postnom']) && isset($_POST['prenom']) && isset($_POST['adresse']) && isset($_POST['telephone']) && isset($_POST['age'])) {
+    $id = htmlspecialchars($_POST['id']);
+    $nom = htmlspecialchars($_POST['nom']);
+    $postnom = htmlspecialchars($_POST['postnom']);
+    $prenom = htmlspecialchars($_POST['prenom']);
+    $adresse = htmlspecialchars($_POST['adresse']);
+    $telephone = htmlspecialchars($_POST['telephone']);
+    $age = htmlspecialchars($_POST['age']);
+
+    $sql = "UPDATE etudiants SET nom = '$nom', postnom = '$postnom', prenom = '$prenom', adresse = '$adresse', telephone = '$telephone', age = $age WHERE id = $id";
+    
+    if ($connect->query($sql)) {
+        echo "Mise à jour réussie.";
+    } else {
+        echo "Erreur lors de la mise à jour : " . $connect->error;
+    }
+} else {
+    echo "Paramètres insuffisants pour la mise à jour.";
+}
+?>
+
+
+5. delete.php :
+<?php
+include('connect.php');
+
+if (isset($_GET['id'])) {
+    $id = htmlspecialchars($_GET['id']);
+
+    $sql = "DELETE FROM etudiants WHERE id = $id";
+    
+    if ($connect->query($sql)) {
+        echo "Suppression réussie.";
+    } else {
+        echo "Erreur lors de la suppression : " . $connect->error;
+    }
+} else {
+    echo "ID non spécifié pour la suppression.";
+}
+?>
